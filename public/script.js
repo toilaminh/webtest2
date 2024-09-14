@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const registerBtn = document.getElementById('registerBtn');
     const refreshBtn = document.getElementById('refreshBtn');
     const empTable = document.getElementById('empTable');
+    const refresh_token_btn = document.getElementById('refreshtoken');
     var emp_counter = 0;
 
     const fetchEmployees = async () => {
@@ -42,7 +43,21 @@ document.addEventListener('DOMContentLoaded', () => {
             
     };
 
+    const refreshtoken = async () => {
+        try {
+            const response = await fetch('/refresh');
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            console.log('Token refreshed successfully');
+        } catch (error) {
+            console.error('Error fetching employees:', error);
+        }
+    };
+
     refreshBtn.addEventListener('click', fetchEmployees);
+
+    refresh_token_btn.addEventListener('click', refreshtoken)
 
     registerBtn.addEventListener('click', function() {
         window.location.href = '/install';
