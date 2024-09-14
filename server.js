@@ -13,9 +13,11 @@ app.use(cors({
     crossorigin: true,
 }))
 
-var clientId = null;
-var clientSecret = null;
-var redirectUri = null;
+const server_in4 = await fs.promises.readFile('server_in4.json', 'utf8');
+const data = JSON.parse(server_in4);
+var clientId = data.client_id;
+var clientSecret = data.client_secret;
+var redirectUri = data.redirect_uri;
 
 app.use(express.static('public'));
 
@@ -32,16 +34,11 @@ app.use(function (req, res, next) {
 
 // Route chính để bắt đầu quá trình ủy quyền
 app.get('/install', async (req, res) => {
-    const server_in4 = await fs.promises.readFile('server_in4.json', 'utf8');
     if(server_in4 == null){
         alert("Something wrong! Please try again!");
         res.redirect('/');
     }
     else{
-        const data = JSON.parse(server_in4);
-        clientId = data.client_id;
-        clientSecret = data.client_secret;
-        redirectUri = data.redirect_uri;
         var authUrl = `https://b24-gch904.bitrix24.vn/oauth/authorize/?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}/callback`;
         res.redirect(authUrl);
     }
@@ -73,24 +70,39 @@ app.get('/callback', async (req, res) => {
     }
 });
 
-function saveTokens( access_Token, refresh_Token, expire_In) {
-    const tokens = { access_Token, refresh_Token, expire_In, timeStamp: Date.now() };
+function saveTokens( access_Token, refresh_Token, expires_In) {
+    const tokens = { access_Token, refresh_Token, expires_In, timeStamp: Date.now() };
     fs.writeFileSync('tokens.json', JSON.stringify(tokens));
 }
 
 async function getNewToken() {
-    const tokens = JSON.parse(fs.readFileSync('tokens.json', 'utf8'));
-    if (Date.now() >= tokens.timestamp + tokens.expires_in * 1000)
+    const tokens_data = await fs.promises.readFile('tokens.json', 'utf8');
+    const tokens = JSON.parse(tokens_data);
+    console.log(tokens.expires_In);
+    if (Date.now() >= tokens.timeStamp + tokens.expires_In * 1000)
     {
+        console.log(Date.now());
+        console.log(tokens.timeStamp);
         try {
-            const response = await axios.post('https://oauth.bitrix.info/oauth/token/', {
-                grant_type: 'refresh_token',
-                client_id: clientId,
-                client_secret: clientSecret,
-                refresh_token: tokens.refresh_Token
+            const response = await axios.post('https://oauth.bitrix.info/oauth/token/',null, {
+                params: {
+                    grant_type: 'refresh_token',
+                    client_id: clientId,
+                    client_secret: clientSecret,
+                    refresh_token: tokens.refresh_Token
+                }
             });
-            const dataResponse = await response.json();
-            saveTokens(dataResponse.access_token, dataResponse.refresh_token, dataResponse.expires_in);
+            const dataResponse = await response.data;
+            if(dataResponse != null)
+            {
+                saveTokens(dataResponse.access_token, dataResponse.refresh_token, dataResponse.expires_in);
+                console.log(clientId + ' ' + clientSecret + ' ' + tokens.refresh_Token);
+                console.log(dataResponse);
+            }
+            else
+            {
+                console.log('Failed to refresh token' , response.status);
+            }
         }
         catch (error) {
             console.error('Error refreshing token:', error);
@@ -116,6 +128,7 @@ async function callBitrixApi(action, payload) {
         });
         console.log(`Response status: ${response.status}`);
         if (!response.ok) {
+            getNewToken();
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
@@ -150,6 +163,17 @@ app.get('/employee', async (req, res) => {
         }
     } catch (error) {  
         console.error('Error fetching employees:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/refresh', async (req, res) => {
+    try {
+        console.log('Refreshing token...');
+        getNewToken();
+    }
+    catch (error) {
+        console.error('Error refreshing token:', error);
         res.status(500).json({ error: error.message });
     }
 });
