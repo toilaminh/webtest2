@@ -26,13 +26,6 @@ app.use(function (req, res, next) {
     next();
 });
 
-// app.get('/', (req, res) => {
-//     res.send(`<h1>Welcome to Bitrix24 OAuth App</h1>
-//             <p><a href="/install">Install Application</a></p>
-//             <p><a href="/employee">Test User API</a></p>`);
-// });
-
-// Route chính để bắt đầu quá trình ủy quyền
 app.get('/install', async (req, res) => {
     if(server_in4 == null){
         alert("Something wrong! Please try again!");
@@ -44,12 +37,9 @@ app.get('/install', async (req, res) => {
     }
 });
 
-// Route để nhận mã code sau khi người dùng ủy quyền
 app.get('/callback', async (req, res) => {
     const authorizationCode = req.query.code;
-    
     console.log(`Authorization Code: ${authorizationCode}`);
-    // Trao đổi mã code lấy access token
     try {
         const response = await axios.post('https://oauth.bitrix.info/oauth/token/', null, {
             params: {
@@ -122,7 +112,7 @@ async function callBitrixApi(action, payload) {
         const response = await fetch(`https://b24-gch904.bitrix24.vn/rest/${action}`, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Bearer ${token}`,
             },
             body: JSON.stringify(payload)
         });
@@ -149,22 +139,77 @@ async function callBitrixApi(action, payload) {
     }
 }
 
-app.get('/employee', async (req, res) => {
+// app.get('/employee', async (req, res) => {
+//     try {
+//         console.log('Fetching employees...');
+//         const action = 'user.get.json';
+//         const employeesResponse = await callBitrixApi(action, {});
+//         if (employeesResponse) {
+//             console.log('Employees fetched successfully:', employeesResponse);
+//             res.json(employeesResponse.result);
+//         } else {
+//             console.error('Failed to fetch employees');
+//             res.status(500).json({ error: 'Failed to fetch employees' });
+//         }
+//     } catch (error) {  
+//         console.error('Error fetching employees:', error);
+//         res.status(500).json({ error: error.message });
+//     }
+// });
+
+app.get('/contacts', async (req, res) => {
     try {
-        console.log('Fetching employees...');
-        const action = 'user.get.json';
-        const employeesResponse = await callBitrixApi(action, {});
-        if (employeesResponse) {
-            console.log('Employees fetched successfully:', employeesResponse);
-            res.json(employeesResponse.result);
+        console.log('Fetching contacts...');
+        const action = 'crm.contact.list';
+        const contactsResponse = await callBitrixApi(action, {});
+        if (contactsResponse) {
+            console.log('Contacts fetched successfully:', contactsResponse);
+            res.json(contactsResponse.result);
         } else {
-            console.error('Failed to fetch employees');
-            res.status(500).json({ error: 'Failed to fetch employees' });
+            console.error('Failed to fetch contacts');
+            res.status(500).json({ error: 'Failed to fetch contacts' });
         }
-    } catch (error) {  
-        console.error('Error fetching employees:', error);
+    } catch (error) {
+        console.error('Error fetching contacts:', error);
         res.status(500).json({ error: error.message });
     }
+});
+
+app.get('/contacts/:id', async (req, res) => {
+    try {
+        console.log('Fetching contact with ID:', req.params.id, '...');
+        const action = 'crm.contact.get?id=' + req.params.id;
+        const contactResponse = await callBitrixApi(action, {});
+        if (contactResponse) {
+            console.log('Contact fetched successfully:', contactResponse);
+            res.json(contactResponse.result);
+        } else {
+            console.error('Failed to fetch contact');
+            res.status(500).json({ error: 'Failed to fetch contact' });
+        }
+    } catch (error) {
+        console.error('Error fetching contact:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/bank/:id', async (req, res) => {
+    try {
+        console.log('Fetching bank with ID:', req.params.id, '...');
+        const action = 'crm.requisite.bankdetail.get?id=' + req.params.id;
+        const bankResponse = await callBitrixApi(action, {});
+        if (bankResponse) {
+            console.log('Bank fetched successfully:', bankResponse);
+            res.json(bankResponse.result);
+        } else {
+            res.json(bankResponse.result);
+            console.error('Failed to fetch bank');
+            res.status(500).json({ error: 'Failed to fetch bank' });
+        }
+    } catch (error) {
+        console.error('Error fetching bank:', error);
+        res.status(500).json({ error: error.message });
+    }  
 });
 
 app.get('/refresh', async (req, res) => {
