@@ -14,12 +14,12 @@ h1 {
     border-radius: 5px;
 }
 
-#empTable {
+#contactList {
     width: 100%;
     border: #000 1px solid;
 }
 
-#empTable tr {
+#contactList tr {
     
     padding: 10px;
     background-color: rgb(231, 224, 210);
@@ -28,23 +28,22 @@ h1 {
     transition-duration: 0.4s;
 }
 
-#empTable tr:hover {
+#contactList tr:hover {
     background-color: rgb(253, 253, 152);
-    font-weight: bold;
 }
 
-#empTable tr.highlighted {
+#contactList tr.highlighted {
     background-color: yellow;
 }
 
-#empTable th {
+#contactList th {
     background-color: rgb(179, 255, 0);
     padding: 10px;
     border: 1px solid #000000;
     margin-bottom: 5px;
 }
 
-#empTable td {
+#contactList td {
     cursor: pointer;
     padding: 10px;
     border: 1px solid #000000;
@@ -56,7 +55,7 @@ h1 {
     text-align: right;
 }
 
-#refreshBtn {
+#installBtn {
     margin: 10px;
     padding: 10px;
     border: 1px solid #000;
@@ -68,6 +67,38 @@ h1 {
     font-weight: bold;
 }
 
-#refreshBtn:hover {
+#installBtn:hover {
+    background-color: rgb(117, 240, 172);
+}
+
+#reinstallBtn {
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #000;
+    border-radius: 5px;
+    display: inline-block;
+    cursor: pointer;
+    background-color: rgb(174, 243, 211);
+    transition-duration: 0.4s;
+    font-weight: bold;
+}
+
+#reinstallBtn:hover {
+    background-color: rgb(117, 240, 172);
+}
+
+#submit {
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #000;
+    border-radius: 5px;
+    display: inline-block;
+    cursor: pointer;
+    background-color: rgb(174, 243, 211);
+    transition-duration: 0.4s;
+    font-weight: bold;
+}
+
+#submit:hover {
     background-color: rgb(117, 240, 172);
 }
