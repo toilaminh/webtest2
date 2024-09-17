@@ -5,20 +5,45 @@ document.addEventListener('DOMContentLoaded', () => {
     const contactList = document.getElementById('contactList');
     var emp_counter = 0;
 
+    async function routeMain() {
+        fetch('/');
+    }
+
     async function fetchContactsDetails(id) {
         const response = await fetch('/contacts/' + id);
         const contact = await response.json();
         return contact;
     }
 
-    async function deleteContact(id) {
-        const response = await fetch('/delete/' + id);
-        const result = await response.json();
-        if(result.result == true)
+    async function deleteBank(id) {
+        const response1 = await fetch('/deleterequisitebank/' + id);
+        const result1 = await response1.json();
+        if(result1.result == true)
         {
+            console.log("Delete bank successfully!");
+        }
+        return result1;
+    }
+
+    async function deleteRequisites(id) {
+        const response2 = await fetch('/deleterequisite/' + id);
+        const result2 = await response2.json();
+        if(result2.result == true)
+        {
+            console.log("Delete requisites successfully!");
+        }
+        return result2;
+    }
+
+    async function deleteContact(id) {
+        const response3 = await fetch('/deletecontact/' + id);
+        const result3 = await response3.json();
+        if(result3.result == true)
+        {
+            console.log("Delete contact successfully!");
             alert("Delete contact successfully!");
         }
-        return result;
+        return result3;
     }
 
     async function fetchContacts() {
@@ -46,6 +71,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const td8 = document.createElement('td');
             var delBtn = document.createElement('button');
             var editBtn = document.createElement('button');
+            var bankID;
+            var requisitesID;
 
             delBtn.textContent = 'Delete';
             editBtn.textContent = 'Edit';
@@ -117,6 +144,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         bank.forEach(bankDetails => {
                             if(bankDetails.ENTITY_ID == requisite.ID)
                             {
+                                bankID = bankDetails.ID;
+                                requisitesID = requisite.ID;
                                 if(!bankDetails.RQ_ACC_NAME)
                                 {
                                     td6.textContent = 'No Bank';
@@ -139,7 +168,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
             
-            // delBtn.addEventListener('click', deleteContact(contact.ID));
+            delBtn.addEventListener('click', () => {
+                deleteBank(bankID);
+                deleteRequisites(requisitesID);
+                deleteContact(contact.ID);
+                location.reload();
+            });
             
             row.appendChild(td1);
             row.appendChild(td2);

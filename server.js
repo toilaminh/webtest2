@@ -230,11 +230,13 @@ app.get('/bank', async (req, res) => {
     }  
 });
 
-app.get('/delete/:id', async (req, res) => {
+
+
+app.get('/deletecontact/:id', async (req, res) => {
     try {
         console.log('Deleting contact with ID:', req.params.id, '...');
-        const action = 'crm.contact.delete?id=' + req.params.id;
-        const contactResponse = await callBitrixApi(action, {});
+        const action1 = 'crm.contact.delete?id=' + req.params.id;
+        const contactResponse = await callBitrixApi(action1, {});
         if (contactResponse) {
             console.log('Contact deleted successfully:', contactResponse);
             res.json(contactResponse.result);
@@ -242,8 +244,44 @@ app.get('/delete/:id', async (req, res) => {
             console.error('Failed to delete contact');
             res.status(500).json({ error: 'Failed to delete contact' });
         }
+        
+        
     } catch (error) {
         console.error('Error deleting contact:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/deleterequisite/:id', async (req, res) => {
+    try {
+        const action2 = 'crm.requisite.delete?id=' + req.params.id;
+        const requisitesResponse = await callBitrixApi(action2, {});
+        if (requisitesResponse) {
+            console.log('Requisites deleted successfully:', requisitesResponse);
+            res.json(requisitesResponse.result);
+        } else {
+            console.error('Failed to delete requisites');
+            res.status(500).json({ error: 'Failed to delete requisites' });
+        }
+    } catch (error) {
+        console.error('Error deleting requisites:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/deleterequisitebank/:id', async (req, res) => {
+    try {
+        const action3 = 'crm.requisite.bankdetail.delete?id=' + req.params.id;
+        const bankResponse = await callBitrixApi(action3, {});
+        if (bankResponse) {
+            console.log('Bank deleted successfully:', bankResponse);
+            res.json(bankResponse.result);
+        } else {
+            console.error('Failed to delete bank');
+            res.status(500).json({ error: 'Failed to delete bank' });
+        }
+    } catch (error) {
+        console.error('Error deleting bank:', error);
         res.status(500).json({ error: error.message });
     }
 });
