@@ -193,10 +193,28 @@ app.get('/contacts/:id', async (req, res) => {
     }
 });
 
-app.get('/bank/:id', async (req, res) => {
+app.get('/requisites', async (req, res) => {
     try {
-        console.log('Fetching bank with ID:', req.params.id, '...');
-        const action = 'crm.requisite.bankdetail.get?id=' + req.params.id;
+        console.log('Fetching requisites...');
+        const action = 'crm.requisite.list';
+        const requisitesResponse = await callBitrixApi(action, {});
+        if (requisitesResponse) {
+            console.log('Requisites fetched successfully:', requisitesResponse);
+            res.json(requisitesResponse.result);
+        } else {
+            console.error('Failed to fetch requisites');
+            res.status(500).json({ error: 'Failed to fetch requisites' });
+        }
+    } catch (error) {
+        console.error('Error fetching requisites:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/bank', async (req, res) => {
+    try {
+        console.log('Fetching bank details...');
+        const action = 'crm.requisite.bankdetail.list';
         const bankResponse = await callBitrixApi(action, {});
         if (bankResponse) {
             console.log('Bank fetched successfully:', bankResponse);
@@ -210,6 +228,24 @@ app.get('/bank/:id', async (req, res) => {
         console.error('Error fetching bank:', error);
         res.status(500).json({ error: error.message });
     }  
+});
+
+app.get('/delete/:id', async (req, res) => {
+    try {
+        console.log('Deleting contact with ID:', req.params.id, '...');
+        const action = 'crm.contact.delete?id=' + req.params.id;
+        const contactResponse = await callBitrixApi(action, {});
+        if (contactResponse) {
+            console.log('Contact deleted successfully:', contactResponse);
+            res.json(contactResponse.result);
+        } else {
+            console.error('Failed to delete contact');
+            res.status(500).json({ error: 'Failed to delete contact' });
+        }
+    } catch (error) {
+        console.error('Error deleting contact:', error);
+        res.status(500).json({ error: error.message });
+    }
 });
 
 app.get('/refresh', async (req, res) => {

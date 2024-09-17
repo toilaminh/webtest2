@@ -11,10 +11,14 @@ document.addEventListener('DOMContentLoaded', () => {
         return contact;
     }
 
-    async function fetchBankDetails(id) {
-        const response = await fetch('/bank/' + id);
-        const bank = await response.json();
-        return bank;
+    async function deleteContact(id) {
+        const response = await fetch('/delete/' + id);
+        const result = await response.json();
+        if(result.result == true)
+        {
+            alert("Delete contact successfully!");
+        }
+        return result;
     }
 
     async function fetchContacts() {
@@ -24,8 +28,12 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('empTable').deleteRow(i);
         }
         emp_counter = 0;
-        const response = await fetch('/contacts');
-        const contacts = await response.json();
+        const response1 = await fetch('/contacts');
+        const contacts = await response1.json();
+        const response2 = await fetch('/requisites');
+        const requisites = await response2.json();
+        const response3 = await fetch('/bank');
+        const bank = await response3.json();
         contacts.forEach(contact => {
             const row = document.createElement('tr');
             const td1 = document.createElement('td');
@@ -41,10 +49,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
             delBtn.textContent = 'Delete';
             editBtn.textContent = 'Edit';
+            // Delete button style
+            delBtn.style.backgroundColor = '#FFA3A3';
+            delBtn.style.color = 'black';
+            delBtn.style.fontWeight = 'bold';
+            delBtn.style.borderColor = 'black';
+            delBtn.style.borderWidth = '1px';
+            delBtn.style.borderStyle = 'solid';
+            delBtn.style.borderRadius = '5px';
+            delBtn.style.padding = '5px';
+            delBtn.style.margin = '5px';
+            // Edit button style
+            editBtn.style.backgroundColor = '#C4FFAA';
+            editBtn.style.color = 'black';
+            editBtn.style.fontWeight = 'bold';
+            editBtn.style.borderColor = 'black';
+            editBtn.style.borderWidth = '1px';
+            editBtn.style.borderStyle = 'solid';
+            editBtn.style.borderRadius = '5px';
+            editBtn.style.padding = '5px';
+            editBtn.style.margin = '5px';
+
+
             td8.appendChild(delBtn);
             td8.appendChild(editBtn);
 
             const details = fetchContactsDetails(contact.ID);
+            
             details.then(contactx => {
                 td1.textContent = contactx.LAST_NAME + ' ' + contactx.NAME;
                 if(contact.ADDRESS == '')
@@ -79,35 +110,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 {
                     td5.textContent = 'No Web';
                 }
-            });
-
-            const bank = fetchBankDetails(contact.ID);
-            if(bank)
-            {
-                bank.then(contacty => {
-                    if(!contacty.RQ_ACC_NAME)
+                requisites.forEach(requisite => {
+                    console.log('ID : ' + requisite.ENTITY_ID + ' ' + contactx.ID);
+                    if(requisite.ENTITY_ID == contactx.ID)
                     {
-                        td6.textContent = 'No Bank';
-                    }
-                    else
-                    {
-                        td6.textContent = contacty.RQ_ACC_NAME;
-                    }
-                    if(!contacty.RQ_ACC_NUM)
-                    {
-                        td7.textContent = 'No Bank';
-                    }
-                    else
-                    {
-                        td7.textContent = contacty.RQ_ACC_NUM;
+                        bank.forEach(bankDetails => {
+                            if(bankDetails.ENTITY_ID == requisite.ID)
+                            {
+                                if(!bankDetails.RQ_ACC_NAME)
+                                {
+                                    td6.textContent = 'No Bank';
+                                }
+                                else
+                                {
+                                    td6.textContent = bankDetails.RQ_ACC_NAME;
+                                }
+                                if(!bankDetails.RQ_ACC_NUM)
+                                {
+                                    td7.textContent = 'No Bank';
+                                }
+                                else
+                                {
+                                    td7.textContent = bankDetails.RQ_ACC_NUM;
+                                }
+                            }
+                        });
                     }
                 });
-            }
-            else
-            {
-                td6.textContent = 'No Bank';
-                td7.textContent = 'No Bank';
-            }
+            });
+            
+            // delBtn.addEventListener('click', deleteContact(contact.ID));
             
             row.appendChild(td1);
             row.appendChild(td2);

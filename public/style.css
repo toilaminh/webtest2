@@ -14,13 +14,51 @@ h1 {
     border-radius: 5px;
 }
 
+.container {
+    padding: 10px;
+    border: #000 1px solid;
+    border-radius: 5px;
+}
+
+.container form {
+    padding: 10px;
+}
+
+.container form label {
+    display: block;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.container form input {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #000;
+    border-radius: 5px;
+}
+
+#submitBtn {
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #000;
+    border-radius: 5px;
+    display: inline-block;
+    cursor: pointer;
+    background-color: rgb(245, 182, 240);
+    transition-duration: 0.4s;
+    font-weight: bold;
+}
+
+#submitBtn:hover {
+    background-color: rgb(255, 134, 245);
+}
+
 #contactList {
     width: 100%;
     border: #000 1px solid;
 }
 
 #contactList tr {
-    
     padding: 10px;
     background-color: rgb(231, 224, 210);
     border: 1px solid #000000;
@@ -44,7 +82,6 @@ h1 {
 }
 
 #contactList td {
-    cursor: pointer;
     padding: 10px;
     border: 1px solid #000000;
     margin-bottom: 5px;
