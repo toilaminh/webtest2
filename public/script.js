@@ -1,13 +1,16 @@
 document.addEventListener('DOMContentLoaded', () => {
     const installBtn = document.getElementById('installBtn');
     const reinstallBtn = document.getElementById('reinstallBtn');
-    const contactForm = document.getElementById('contactForm');
-    const contactList = document.getElementById('contactList');
-    var emp_counter = 0;
 
-    async function routeMain() {
-        fetch('/');
-    }
+    const contactForm = document.getElementById('contactForm');
+
+    const contactList = document.getElementById('contactList');
+
+    const editcontact = document.getElementById('editcontact');
+    const contactName = document.getElementById('contactName');
+    const submitChangeBtn = document.getElementById('submitChangeBtn');
+
+    var emp_counter = 0;
 
     async function fetchContactsDetails(id) {
         const response = await fetch('/contacts/' + id);
@@ -60,6 +63,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const response3 = await fetch('/bank');
         const bank = await response3.json();
         contacts.forEach(contact => {
+            var ContactID = 0;
+            var PhoneID = 0;
+            var EmailID = 0;
+            var WebID = 0;
+            var RequisiteBankID = 0;
             const row = document.createElement('tr');
             const td1 = document.createElement('td');
             const td2 = document.createElement('td');
@@ -116,6 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if(contactx.EMAIL)
                 {
                     td3.textContent = contactx.EMAIL[0].VALUE;
+                    EmailID = contactx.EMAIL[0].ID;
                 }
                 else
                 {
@@ -124,6 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if(contactx.PHONE)
                 {
                     td4.textContent = contactx.PHONE[0].VALUE;
+                    PhoneID = contactx.PHONE[0].ID;
                 }
                 else
                 {
@@ -132,11 +142,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 if(contactx.WEB)
                 {
                     td5.textContent = contactx.WEB[0].VALUE;
+                    WebID = contactx.WEB[0].ID;
                 }
                 else
                 {
                     td5.textContent = 'No Web';
                 }
+
                 requisites.forEach(requisite => {
                     console.log('ID : ' + requisite.ENTITY_ID + ' ' + contactx.ID);
                     if(requisite.ENTITY_ID == contactx.ID)
@@ -166,6 +178,47 @@ document.addEventListener('DOMContentLoaded', () => {
                         });
                     }
                 });
+
+                submitChangeBtn.addEventListener('click', function() {
+                    const efirstname = document.getElementById('efirstName');
+                    const elastname = document.getElementById('elastName');
+                    const eaddress = document.getElementById('eaddress');
+                    const eemail = document.getElementById('eemail');
+                    const ephone = document.getElementById('ephone');
+                    const eweb = document.getElementById('ewebsite');
+                    const ebankAccName = document.getElementById('ebankAccName');
+                    const ebankAccNum = document.getElementById('ebankAccNum');
+                    const updateFields = {
+                        LAST_NAME: elastname.value,
+                        NAME: efirstname.value,
+                        ADDRESS: eaddress.value,
+                        EMAIL: [{
+                            ID: EmailID,
+                            VALUE: eemail.value,
+                        }],
+                        PHONE: [{
+                            ID: PhoneID,
+                            VALUE: ephone.value,
+                        }],
+                        WEB: [{
+                            ID: WebID,
+                            VALUE: eweb.value,
+                        }]
+                    }
+                    const updateBankFields = {
+                        RQ_ACC_NAME: ebankAccName.value,
+                        RQ_ACC_NUM: ebankAccNum.value
+                    }
+                    if (eemail.value != '' || eemail.value != eemail.defaultValue) {
+                        if(ephone.value != '' || ephone.value != ephone.defaultValue){
+                            if(eweb.value != '' || eweb.value != eweb.defaultValue){
+                                console.log('Thông tin cập nhật:',updateFields);
+                                updateContact(ContactID, updateFields, RequisiteBankID, updateBankFields);
+                            }
+                        }
+                    }
+                    location.reload();
+                });
             });
             
             delBtn.addEventListener('click', () => {
@@ -173,6 +226,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 deleteRequisites(requisitesID);
                 deleteContact(contact.ID);
                 location.reload();
+            });
+
+            editBtn.addEventListener('click', () => {
+                editcontact.style.display = 'block';
+                ContactID = contact.ID;
+                RequisiteBankID = bankID;
+                contactName.textContent = contact.LAST_NAME + ' ' + contact.NAME;
             });
             
             row.appendChild(td1);
@@ -199,6 +259,22 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error fetching employees:', error);
         }
     };
+
+    function updateContact(contactId, updateFields, bankId, updateBankFields) {
+        fetch('/updatecontact', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                contactId: contactId,
+                updateFields: updateFields,
+                bankId: bankId,
+                updateBankFields: updateBankFields
+            })
+        })
+    }
 
     reinstallBtn.addEventListener('click', refreshtoken)
 

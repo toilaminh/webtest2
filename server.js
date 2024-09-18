@@ -20,6 +20,7 @@ var clientSecret = data.client_secret;
 var redirectUri = data.redirect_uri;
 
 app.use(express.static('public'));
+app.use(express.json());
 
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -108,22 +109,20 @@ async function callBitrixApi(action, payload) {
         const tkData = await fs.promises.readFile('tokens.json', 'utf8');
         const tokens = JSON.parse(tkData);
         let token = tokens.access_Token;
-        console.log(`Token: ${token}`);
         const response = await fetch(`https://b24-gch904.bitrix24.vn/rest/${action}`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(payload)
         });
-        console.log(`Response status: ${response.status}`);
         if (!response.ok) {
             getNewToken();
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
-        console.log(`Response: ${JSON.stringify(data)}`);
         return data;
     }
     catch (error) {
@@ -163,7 +162,6 @@ app.get('/contacts', async (req, res) => {
         const action = 'crm.contact.list';
         const contactsResponse = await callBitrixApi(action, {});
         if (contactsResponse) {
-            console.log('Contacts fetched successfully:', contactsResponse);
             res.json(contactsResponse.result);
         } else {
             console.error('Failed to fetch contacts');
@@ -181,7 +179,6 @@ app.get('/contacts/:id', async (req, res) => {
         const action = 'crm.contact.get?id=' + req.params.id;
         const contactResponse = await callBitrixApi(action, {});
         if (contactResponse) {
-            console.log('Contact fetched successfully:', contactResponse);
             res.json(contactResponse.result);
         } else {
             console.error('Failed to fetch contact');
@@ -199,7 +196,6 @@ app.get('/requisites', async (req, res) => {
         const action = 'crm.requisite.list';
         const requisitesResponse = await callBitrixApi(action, {});
         if (requisitesResponse) {
-            console.log('Requisites fetched successfully:', requisitesResponse);
             res.json(requisitesResponse.result);
         } else {
             console.error('Failed to fetch requisites');
@@ -217,7 +213,6 @@ app.get('/bank', async (req, res) => {
         const action = 'crm.requisite.bankdetail.list';
         const bankResponse = await callBitrixApi(action, {});
         if (bankResponse) {
-            console.log('Bank fetched successfully:', bankResponse);
             res.json(bankResponse.result);
         } else {
             res.json(bankResponse.result);
@@ -238,7 +233,6 @@ app.get('/deletecontact/:id', async (req, res) => {
         const action1 = 'crm.contact.delete?id=' + req.params.id;
         const contactResponse = await callBitrixApi(action1, {});
         if (contactResponse) {
-            console.log('Contact deleted successfully:', contactResponse);
             res.json(contactResponse.result);
         } else {
             console.error('Failed to delete contact');
@@ -257,7 +251,6 @@ app.get('/deleterequisite/:id', async (req, res) => {
         const action2 = 'crm.requisite.delete?id=' + req.params.id;
         const requisitesResponse = await callBitrixApi(action2, {});
         if (requisitesResponse) {
-            console.log('Requisites deleted successfully:', requisitesResponse);
             res.json(requisitesResponse.result);
         } else {
             console.error('Failed to delete requisites');
@@ -274,7 +267,6 @@ app.get('/deleterequisitebank/:id', async (req, res) => {
         const action3 = 'crm.requisite.bankdetail.delete?id=' + req.params.id;
         const bankResponse = await callBitrixApi(action3, {});
         if (bankResponse) {
-            console.log('Bank deleted successfully:', bankResponse);
             res.json(bankResponse.result);
         } else {
             console.error('Failed to delete bank');
@@ -285,6 +277,44 @@ app.get('/deleterequisitebank/:id', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
+app.post('/updatecontact', async (req, res) => {
+    console.log('Updating contact ', req.body);
+    try {
+        const contactId = req.body.contactId;
+        const updateFields = req.body.updateFields;
+        const bankId = req.body.bankId;
+        const updateBankFields = req.body.updateBankFields;
+
+        console.log('Contact ID:', contactId, 'Update Fields:', updateFields);
+
+        const action1 = 'crm.contact.update';
+        const payload1 = {
+            id: contactId,
+            fields: updateFields
+        };
+
+        const response1 = await callBitrixApi(action1, payload1);
+
+        const action2 = 'crm.requisite.bankdetail.update';
+        const payload2 = {
+            id: bankId,
+            fields: updateBankFields
+        };
+
+        const response2 = await callBitrixApi(action2, payload2);
+
+        if (response1 && response1.result && response2 && response2.result) {
+            res.json({ success: true, message: 'Contact updated successfully!' });
+        } else {
+            res.status(500).json({ success: false, message: 'Failed to update contact' });
+        }
+    } catch (error) {
+        console.error('Error updating contact:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
 
 app.get('/refresh', async (req, res) => {
     try {
