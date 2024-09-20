@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     bankInf
                 })
             })
+            location.reload();
         }
     })
 
