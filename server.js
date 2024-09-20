@@ -57,7 +57,6 @@ app.get('/callback', async (req, res) => {
     } catch (error) {
         console.error('Error exchanging code for token:', error);
         res.status(500).send('Error while exchanging code for token.');
-        res.redirect('/');
     }
 });
 
@@ -155,6 +154,72 @@ async function callBitrixApi(action, payload) {
 //         res.status(500).json({ error: error.message });
 //     }
 // });
+
+app.post('/createcontact', async (req, res) => {
+    console.log('Creating contact...');
+    const contactInf = req.body.contactInf;
+    const bankInf = req.body.bankInf;
+    try {
+        const action1 = 'crm.contact.add';
+        const payload1 = {
+            fields: contactInf,
+            params: {
+                'REGISTER_SONET_EVENT': 'Y'
+            }
+        }
+        const contactResponse = await callBitrixApi(action1, payload1);
+        if (contactResponse) {
+            const newId = contactResponse.result;
+            console.log('Contact created successfully:', newId);
+            try{
+                const action2 = 'crm.requisite.list';
+                const payload2 = {}
+                const reqResponse = await callBitrixApi(action2, payload2);
+                const reqDatas = reqResponse.result;
+                reqDatas.forEach(async reqData => {
+                    if(reqData.ENTITY_ID == newId)
+                    {
+                        console.log('ReqData ENTITY_ID : ' + reqData.ENTITY_ID);
+                        const reqId = reqData.ID;
+                        const action3 = 'crm.requisite.bankdetail.add';
+                        const payload3 = {
+                            fields: {
+                                ENTITY_ID: reqId,
+                                NAME: 'Ngân hàng cá nhân',
+                                RQ_ACC_NAME: bankInf.RQ_ACC_NAME,
+                                RQ_ACC_NUM: bankInf.RQ_ACC_NUM
+                            }
+                        }
+                        console.log('ReqData ID : ' + reqData.ID);
+                        console.log('Payload3 : ' + payload3.fields.bankInf);
+                        try {
+                            const bankResponse = await callBitrixApi(action3, payload3);
+                            if(bankResponse)
+                            {
+                                console.log('Bank has been created!');
+                            }
+                            else
+                            {
+                                console.log('Failed!');
+                            }
+                        } catch (error) {
+                            console.log('Error fetching bank');
+                        }
+                    }
+                });
+            } catch (error) {
+                console.log('Load requisite error');
+            }
+
+        } else {
+            console.error('Failed to create contact');
+            res.status(500).json({ error: 'Failed to create contact' });
+        }
+    } catch (error) {
+        console.error('Error creating contact:', error);
+        res.status(500).json({ error: error.message });
+    }
+})
 
 app.get('/contacts', async (req, res) => {
     try {
@@ -283,28 +348,18 @@ app.post('/updatecontact', async (req, res) => {
     try {
         const contactId = req.body.contactId;
         const updateFields = req.body.updateFields;
-        const bankId = req.body.bankId;
-        const updateBankFields = req.body.updateBankFields;
 
         console.log('Contact ID:', contactId, 'Update Fields:', updateFields);
 
-        const action1 = 'crm.contact.update';
-        const payload1 = {
+        const action = 'crm.contact.update';
+        const payload = {
             id: contactId,
             fields: updateFields
         };
 
-        const response1 = await callBitrixApi(action1, payload1);
+        const response = await callBitrixApi(action, payload);
 
-        const action2 = 'crm.requisite.bankdetail.update';
-        const payload2 = {
-            id: bankId,
-            fields: updateBankFields
-        };
-
-        const response2 = await callBitrixApi(action2, payload2);
-
-        if (response1 && response1.result && response2 && response2.result) {
+        if (response && response.result) {
             res.json({ success: true, message: 'Contact updated successfully!' });
         } else {
             res.status(500).json({ success: false, message: 'Failed to update contact' });
@@ -315,6 +370,32 @@ app.post('/updatecontact', async (req, res) => {
     }
 });
 
+app.post('/updatebank', async (req, res) => {
+    console.log('Updating bank ', req.body);
+    try {
+        const bankId = req.body.bankId;
+        const updateFields = req.body.updateFields;
+
+        console.log('Bank ID:', bankId, 'Update Fields:', updateFields);
+
+        const action = 'crm.requisite.bankdetail.update';
+        const payload = {
+            id: bankId,
+            fields: updateFields
+        };
+
+        const response = await callBitrixApi(action, payload);
+
+        if (response && response.result) {
+            res.json({ success: true, message: 'Contact updated successfully!' });
+        } else {
+            res.status(500).json({ success: false, message: 'Failed to update contact' });
+        }
+    } catch (error) {
+        console.error('Error updating contact:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+})
 
 app.get('/refresh', async (req, res) => {
     try {
