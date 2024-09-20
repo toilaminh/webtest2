@@ -13,42 +13,40 @@
         <button id="reinstallBtn">Reinstall App</button>
     </div>
     <h1><img src="image/bitrix.png" alt="logo" width="100" height="70">Thêm liên hệ</h1>
-    <div class="container">
-        <form id="contactForm">
-            <div width="100%">
-                <div width="50%" style="display: inline-block;">
-                    <label for="name">Họ<div style="color: red; display: inline-block;">*</div></label>
-                    <input type="text" id="name" name="lastName" placeholder="Họ" required>
-                </div>
-                <div width="50%" style="display: inline-block;">
-                    <label for="name">Tên<div style="color: red; display: inline-block;">*</div></label>
-                    <input type="text" id="name" name="firstName" placeholder="Tên" required>
-                </div>
+    <div id="container">
+        <div width="100%">
+            <div width="50%" style="display: inline-block;">
+                <label for="name">Họ</label>
+                <input type="text" id="lastName" name="lastName" placeholder="Họ">
             </div>
-            <label for="address">Địa chỉ<div style="color: red; display: inline-block;">*</div></label>
-            <input type="text" id="address" name="address" placeholder="Địa chỉ" required>
-            <br>
-            <label for="phone">Số điện thoại<div style="color: red; display: inline-block;">*</div></label>
-            <input type="tel" id="phone" name="phone" placeholder="Số điện thoại" required>
-            <br>
-            <label for="email">Email<div style="color: red; display: inline-block;">*</div></label>
-            <input type="email" id="email" name="email" placeholder="Email" required>
-            <br>
-            <label for="website">Website<div style="color: red; display: inline-block;">*</div></label>
-            <input type="text" id="website" name="website" placeholder="Website">
-            <div width="100%">
-                <div width="50%" style="display: inline-block;">
-                    <label for="bankName">Tên tài khoản ngân hàng<div style="color: red; display: inline-block;">*</div></label>
-                    <input type="text" id="bankAccName" name="bankAccName" placeholder="Tên tài khoản ngân hàng">
-                </div>
-                <div width="50%" style="display: inline-block;">
-                    <label for="bankAccount">Số tài khoản<div style="color: red; display: inline-block;">*</div></label>
-                    <input type="text" id="bankAccNum" name="bankAccNum" placeholder="Số tài khoản">
-                </div>
+            <div width="50%" style="display: inline-block;">
+                <label for="name">Tên</label>
+                <input type="text" id="firstName" name="firstName" placeholder="Tên">
             </div>
-            <br>
-            <button id="submitBtn" type="submit">Thêm</button>
-        </form>
+        </div>
+        <label for="address">Địa chỉ</label>
+        <input type="text" id="address" name="address" placeholder="Địa chỉ">
+        <br>
+        <label for="phone">Số điện thoại</label>
+        <input type="tel" id="phone" name="phone" placeholder="Số điện thoại">
+        <br>
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="Email">
+        <br>
+        <label for="website">Website</label>
+        <input type="text" id="website" name="website" placeholder="Website">
+        <div width="100%">
+            <div width="50%" style="display: inline-block;">
+                <label for="bankName">Tên tài khoản ngân hàng</label>
+                <input type="text" id="bankAccName" name="bankAccName" placeholder="Tên tài khoản ngân hàng">
+            </div>
+            <div width="50%" style="display: inline-block;">
+                <label for="bankAccount">Số tài khoản</label>
+                <input type="text" id="bankAccNum" name="bankAccNum" placeholder="Số tài khoản">
+            </div>
+        </div>
+        <br>
+        <button id="submitBtn" type="submit" value="Thêm">Thêm</button>
     </div>
     <h1><img src="image/bitrix.png" alt="logo" width="100" height="70">Danh sách liên hệ</h1>
     <table id="contactList">
@@ -65,41 +63,40 @@
     </table>
     <div id="editcontact" style="display:none;">
         <h2 id="contactName"></h2>
-        <form id="contactUpdateForm"></form>
-            <div width="100%">
-                <div width="50%" style="display: inline-block;">
-                    <label for="name">Họ</label>
-                    <input type="text" id="elastName" name="lastName" placeholder="Họ">
-                </div>
-                <div width="50%" style="display: inline-block;">
-                    <label for="name">Tên</label>
-                    <input type="text" id="efirstName" name="firstName" placeholder="Tên">
-                </div>
+        <p style="color: red;">Lưu ý : Chỉ trường nào được ghi thì mới được cập nhật!</p>
+        <div width="100%">
+            <div width="50%" style="display: inline-block;">
+                <label for="name">Họ</label>
+                <input type="text" id="elastName" name="lastName" placeholder="Họ">
             </div>
-            <label for="address">Địa chỉ</label>
-            <input type="text" id="eaddress" name="address" placeholder="Địa chỉ">
-            <br>
-            <label for="phone">Số điện thoại</label>
-            <input type="tel" id="ephone" name="phone" placeholder="Số điện thoại">
-            <br>
-            <label for="email">Email</label>
-            <input type="email" id="eemail" name="email" placeholder="Email">
-            <br>
-            <label for="website">Website</label>
-            <input type="text" id="ewebsite" name="website" placeholder="Website">
-            <div width="100%">
-                <div width="50%" style="display: inline-block;">
-                    <label for="bankName">Tên tài khoản ngân hàng</label>
-                    <input type="text" id="ebankAccName" name="bankAccName" placeholder="Tên tài khoản ngân hàng">
-                </div>
-                <div width="50%" style="display: inline-block;">
-                    <label for="bankAccount">Số tài khoản</label>
-                    <input type="text" id="ebankAccNum" name="bankAccNum" placeholder="Số tài khoản">
-                </div>
+            <div width="50%" style="display: inline-block;">
+                <label for="name">Tên</label>
+                <input type="text" id="efirstName" name="firstName" placeholder="Tên">
             </div>
-            <br>
-            <button id="submitChangeBtn" type="submit" value="Lưu">Lưu</button>
-        </form>
+        </div>
+        <label for="address">Địa chỉ</label>
+        <input type="text" id="eaddress" name="address" placeholder="Địa chỉ">
+        <br>
+        <label for="phone">Số điện thoại</label>
+        <input type="tel" id="ephone" name="phone" placeholder="Số điện thoại">
+        <br>
+        <label for="email">Email</label>
+        <input type="email" id="eemail" name="email" placeholder="Email">
+        <br>
+        <label for="website">Website</label>
+        <input type="text" id="ewebsite" name="website" placeholder="Website">
+        <div width="100%">
+            <div width="50%" style="display: inline-block;">
+                <label for="bankName">Tên tài khoản ngân hàng</label>
+                <input type="text" id="ebankAccName" name="bankAccName" placeholder="Tên tài khoản ngân hàng">
+            </div>
+            <div width="50%" style="display: inline-block;">
+                <label for="bankAccount">Số tài khoản</label>
+                <input type="text" id="ebankAccNum" name="bankAccNum" placeholder="Số tài khoản">
+            </div>
+        </div>
+        <br>
+        <button id="submitChangeBtn" type="submit" value="Lưu">Lưu</button>
         
     </div>
     <script src="script.js"></script>

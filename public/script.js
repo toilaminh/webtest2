@@ -2,7 +2,50 @@ document.addEventListener('DOMContentLoaded', () => {
     const installBtn = document.getElementById('installBtn');
     const reinstallBtn = document.getElementById('reinstallBtn');
 
-    const contactForm = document.getElementById('contactForm');
+    const submitBtn = document.getElementById('submitBtn');
+
+    submitBtn.addEventListener('click', async function() {
+        const FName = document.getElementById('firstName').value;
+        const LName = document.getElementById('lastName').value;
+        const Address = document.getElementById('address').value;
+        const Email = document.getElementById('email').value;
+        const Phone = document.getElementById('phone').value;
+        const Website = document.getElementById('website').value;
+        const BankAccName = document.getElementById('bankAccName').value;
+        const BankAccNum = document.getElementById('bankAccNum').value;
+        if(FName != '' && LName != '' && Address != '' && Email != '' && Phone != '' && Website != '' && BankAccName != '' && BankAccNum != '')
+        {
+            const contactInf = {
+                NAME: FName,
+                LAST_NAME: LName,
+                ADDRESS: Address,
+                EMAIL: [{
+                    VALUE: Email
+                }],
+                PHONE: [{
+                    VALUE: Phone
+                }],
+                WEB: [{
+                    VALUE: Website
+                }]
+            }
+            const bankInf = {
+                RQ_ACC_NAME: BankAccName,
+                RQ_ACC_NUM: BankAccNum
+            }
+            fetch('/createcontact', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    contactInf,
+                    bankInf
+                })
+            })
+        }
+    })
 
     const contactList = document.getElementById('contactList');
 
@@ -55,6 +98,11 @@ document.addEventListener('DOMContentLoaded', () => {
         for(let i = emp_counter; i > 0; i--) {
             document.getElementById('empTable').deleteRow(i);
         }
+        var ContactID = 0;
+        var PhoneID = 0;
+        var EmailID = 0;
+        var WebID = 0;
+        var RequisiteBankID = 0;
         emp_counter = 0;
         const response1 = await fetch('/contacts');
         const contacts = await response1.json();
@@ -63,11 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const response3 = await fetch('/bank');
         const bank = await response3.json();
         contacts.forEach(contact => {
-            var ContactID = 0;
-            var PhoneID = 0;
-            var EmailID = 0;
-            var WebID = 0;
-            var RequisiteBankID = 0;
+            
             const row = document.createElement('tr');
             const td1 = document.createElement('td');
             const td2 = document.createElement('td');
@@ -179,48 +223,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
 
-                submitChangeBtn.addEventListener('click', function() {
-                    const efirstname = document.getElementById('efirstName');
-                    const elastname = document.getElementById('elastName');
-                    const eaddress = document.getElementById('eaddress');
-                    const eemail = document.getElementById('eemail');
-                    const ephone = document.getElementById('ephone');
-                    const eweb = document.getElementById('ewebsite');
-                    const ebankAccName = document.getElementById('ebankAccName');
-                    const ebankAccNum = document.getElementById('ebankAccNum');
-                    const updateFields = {
-                        LAST_NAME: elastname.value,
-                        NAME: efirstname.value,
-                        ADDRESS: eaddress.value,
-                        EMAIL: [{
-                            ID: EmailID,
-                            VALUE: eemail.value,
-                        }],
-                        PHONE: [{
-                            ID: PhoneID,
-                            VALUE: ephone.value,
-                        }],
-                        WEB: [{
-                            ID: WebID,
-                            VALUE: eweb.value,
-                        }]
-                    }
-                    const updateBankFields = {
-                        RQ_ACC_NAME: ebankAccName.value,
-                        RQ_ACC_NUM: ebankAccNum.value
-                    }
-                    if (eemail.value != '' || eemail.value != eemail.defaultValue) {
-                        if(ephone.value != '' || ephone.value != ephone.defaultValue){
-                            if(eweb.value != '' || eweb.value != eweb.defaultValue){
-                                console.log('Thông tin cập nhật:',updateFields);
-                                updateContact(ContactID, updateFields, RequisiteBankID, updateBankFields);
-                            }
-                        }
-                    }
-                    location.reload();
-                });
+                
             });
-            
+
             delBtn.addEventListener('click', () => {
                 deleteBank(bankID);
                 deleteRequisites(requisitesID);
@@ -232,7 +237,78 @@ document.addEventListener('DOMContentLoaded', () => {
                 editcontact.style.display = 'block';
                 ContactID = contact.ID;
                 RequisiteBankID = bankID;
+                console.log(ContactID + ' ' + RequisiteBankID);
                 contactName.textContent = contact.LAST_NAME + ' ' + contact.NAME;
+            });
+
+            submitChangeBtn.addEventListener('click', function() {
+                const efirstname = document.getElementById('efirstName');
+                const elastname = document.getElementById('elastName');
+                const eaddress = document.getElementById('eaddress');
+                const eemail = document.getElementById('eemail');
+                const ephone = document.getElementById('ephone');
+                const eweb = document.getElementById('ewebsite');
+                const ebankAccName = document.getElementById('ebankAccName');
+                const ebankAccNum = document.getElementById('ebankAccNum');
+                
+                if (efirstname.value != '' || efirstname.value != efirstname.defaultValue) {
+                    const updateFirstName = {
+                        NAME: efirstname.value
+                    }
+                    updateContact(ContactID, updateFirstName);
+                }
+                if (elastname.value != '' || elastname.value != elastname.defaultValue) {
+                    const updateLastName = {
+                        LAST_NAME: elastname.value
+                    }
+                    updateContact(ContactID, updateLastName);
+                }
+                if(eaddress.value != '' || eaddress.value != eaddress.defaultValue){
+                    const updateAddress = {
+                        ADDRESS: eaddress.value
+                    }
+                    updateContact(ContactID, updateAddress);
+                }
+                if (eemail.value != '' || eemail.value != eemail.defaultValue) {
+                    const updateEmail = {
+                        EMAIL: [{
+                            ID: EmailID,
+                            VALUE: eemail.value,
+                        }]
+                    }
+                    updateContact(ContactID, updateEmail);
+                }
+                if(ephone.value != '' || ephone.value != ephone.defaultValue){
+                    const updatePhone = {
+                        PHONE: [{
+                            ID: PhoneID,
+                            VALUE: ephone.value,
+                        }]
+                    }
+                    updateContact(ContactID, updatePhone);
+                }
+                if(eweb.value != '' || eweb.value != eweb.defaultValue){
+                    const updateWeb = {
+                        WEB: [{
+                            ID: WebID,
+                            VALUE: eweb.value,
+                        }]
+                    }
+                    updateContact(ContactID, updateWeb);
+                }
+                if(ebankAccName.value != '' || ebankAccName.value != ebankAccName.defaultValue){
+                    const updateBankAccName = {
+                        RQ_ACC_NAME: ebankAccName.value
+                    }
+                    updateBank(RequisiteBankID, updateBankAccName);
+                }
+                if(ebankAccNum.value != '' || ebankAccNum.value != ebankAccNum.defaultValue){
+                    const updateBankAccNum = {
+                        RQ_ACC_NUM: ebankAccNum.value
+                    }
+                    updateBank(RequisiteBankID, updateBankAccNum);
+                }
+                location.reload();
             });
             
             row.appendChild(td1);
@@ -256,11 +332,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             console.log('Token refreshed successfully');
         } catch (error) {
-            console.error('Error fetching employees:', error);
+            console.error('Error refreshing token:', error);
         }
     };
 
-    function updateContact(contactId, updateFields, bankId, updateBankFields) {
+    function updateContact(contactId, updateFields) {
         fetch('/updatecontact', {
             method: 'POST',
             headers: {
@@ -269,9 +345,21 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             body: JSON.stringify({
                 contactId: contactId,
-                updateFields: updateFields,
+                updateFields: updateFields
+            })
+        })
+    }
+
+    function updateBank(bankId, updateFields) {
+        fetch('/updatebank', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
                 bankId: bankId,
-                updateBankFields: updateBankFields
+                updateFields: updateFields
             })
         })
     }
@@ -282,7 +370,20 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = '/install';
     });
 
-    fetchContacts();
+    function createContact(contactInforFields, contactBankFields) {
+        fetch('/createcontact', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                contactInforFields: contactInforFields,
+                contactBankFields: contactBankFields
+            })
+        });
+    }
 
+    fetchContacts();
 
 });
