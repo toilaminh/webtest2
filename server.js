@@ -15,6 +15,7 @@ app.use(cors({
 
 const server_in4 = await fs.promises.readFile('server_in4.json', 'utf8');
 const data = JSON.parse(server_in4);
+var bitrix_domain = data.bitrix_domain;
 var clientId = data.client_id;
 var clientSecret = data.client_secret;
 var redirectUri = data.redirect_uri;
@@ -33,7 +34,7 @@ app.get('/install', async (req, res) => {
         res.redirect('/');
     }
     else{
-        var authUrl = `https://b24-ztqi4b.bitrix24.vn/oauth/authorize/?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}/callback`;
+        var authUrl = `https://${bitrix_domain}/oauth/authorize/?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}/callback`;
         res.redirect(authUrl);
     }
 });
@@ -108,7 +109,7 @@ async function callBitrixApi(action, payload) {
         const tkData = await fs.promises.readFile('tokens.json', 'utf8');
         const tokens = JSON.parse(tkData);
         let token = tokens.access_Token;
-        const response = await fetch(`https://b24-ztqi4b.bitrix24.vn/rest/${action}`, {
+        const response = await fetch(`https://${bitrix_domain}/rest/${action}`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
