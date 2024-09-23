@@ -40,5 +40,3 @@ Sau khi chạy, bạn vào link mà ngrok cung cấp và bắt đầu dùng ứn
 2. Khi chỉnh sửa thông tin liên lạc, chỉ có trường nào được điền mới bị thay đổi
 
 3. Tài khoản bitrix24 kích hoạt dùng thử chỉ có 15 ngày. Sau 15 ngày, các dữ liệu crm sẽ không được phép truy cập được bằng web nữa
-
-ngrok http --domain=suited-goshawk-gradually.ngrok-free.app 3000
