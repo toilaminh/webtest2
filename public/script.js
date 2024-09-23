@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
     const installBtn = document.getElementById('installBtn');
-    const reinstallBtn = document.getElementById('reinstallBtn');
 
     const submitBtn = document.getElementById('submitBtn');
 
@@ -364,8 +363,6 @@ document.addEventListener('DOMContentLoaded', () => {
             })
         })
     }
-
-    reinstallBtn.addEventListener('click', refreshtoken)
 
     installBtn.addEventListener('click', function() {
         window.location.href = '/install';
